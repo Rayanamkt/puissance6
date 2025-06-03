@@ -1,0 +1,14 @@
+
+<button (click)="generateRows()">Generate Rows</button>
+
+number of rows: {{rowData.length}}
+
+<ag-grid-angular
+  class="ag-theme-quartz"
+  style="height: 500px;"
+  [rowData]="rowData"
+  [columnDefs]="colDefs"
+  [defaultColDef]="defaultColDef"
+>
+</ag-grid-angular>
+
