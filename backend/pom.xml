@@ -47,4 +47,38 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>swagger3-gen</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.swagger.codegen.v3</groupId>
+                        <artifactId>swagger-codegen-maven-plugin</artifactId>
+                        <version>3.0.47</version>
+                        <configuration>
+                            <inputSpec>http://localhost:8080/v3/api-docs</inputSpec>
+                            <language>typescript-angular</language>
+                            <output>${basedir}/target/generated-typescript-angular7</output>
+                            <configOptions>
+                                <ngVersion>7.2.12</ngVersion>
+                            </configOptions>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>generate-swagger-typescript-angular-7</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+
+    </profiles>
 </project>
