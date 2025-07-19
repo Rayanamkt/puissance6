@@ -1,42 +1,51 @@
 package com.example.power6game.service;
 
+import com.example.power6game.dto.GameStateResponse;
+import com.example.power6game.dto.MakeMoveRequest;
 import com.example.power6game.model.Game;
 import com.example.power6game.model.GameStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Service
 public class GameService {
-    private final Map<String, Game> games = new ConcurrentHashMap<>();
 
-    public Game createGame(String playerName, int player1Time, int player2Time) {
+    private final Map<String, Game> games = new HashMap<>();
+
+    public Game createGame(String player1Name, String player2Name, int player1Time, int player2Time) {
         Game game = new Game();
-        game.setPlayer1Name(playerName);
+        game.setPlayer1Name(player1Name);
+        game.setPlayer2Name(null); // pas encore défini
         game.setPlayer1TimeSeconds(player1Time);
         game.setPlayer2TimeSeconds(player2Time);
+        game.setPlayer1Ready(false);
+        game.setPlayer2Ready(false);
         games.put(game.getId(), game);
         return game;
     }
 
-    public List<Game> getWaitingGames() {
-        return games.values().stream()
-                .filter(game -> game.getStatus() == GameStatus.WAITING_FOR_PLAYER2)
-                .toList();
-    }
-
-    public Game joinGame(String gameId, String playerName) {
+    public Game joinGame(String gameId, String player2Name) {
         Game game = games.get(gameId);
-        if (game == null || game.getStatus() != GameStatus.WAITING_FOR_PLAYER2) {
+
+        if (game == null || game.getPlayer2Name() != null) {
             return null;
         }
 
-        game.setPlayer2Name(playerName);
-        game.setStatus(GameStatus.IN_PROGRESS);
-        game.setLastMoveTime(LocalDateTime.now());
+        game.setPlayer2Name(player2Name);
+        game.setPassword2(UUID.randomUUID().toString());
+
+        if (game.getPlayer1Name() != null && game.getPlayer2Name() != null) {
+            game.setStatus(GameStatus.IN_PROGRESS);
+        }
+
+        games.put(gameId, game);
+
         return game;
     }
 
@@ -44,168 +53,162 @@ public class GameService {
         return games.get(gameId);
     }
 
-    public Game makeMove(String gameId, String password, int column) {
-        Game game = games.get(gameId);
-        if (game == null || game.getStatus() != GameStatus.IN_PROGRESS) {
-            return null;
+    public Game markPlayerReady(String gameId, String password) {
+        Game game = getGame(gameId);
+
+        if (game == null) {
+            throw new IllegalArgumentException("Partie introuvable");
         }
 
-        // Verify password
-        boolean isPlayer1 = password.equals(game.getPassword1());
-        boolean isPlayer2 = password.equals(game.getPassword2());
-
-        if (!isPlayer1 && !isPlayer2) {
-            return null;
+        if (password.equals(game.getPassword1())) {
+            game.setPlayer1Ready(true);
+        } else if (password.equals(game.getPassword2())) {
+            game.setPlayer2Ready(true);
+        } else {
+            throw new IllegalArgumentException("Mot de passe inconnu");
         }
 
-        // Check if it's the correct player's turn
-        int playerNumber = isPlayer1 ? 1 : 2;
-        if (playerNumber != game.getCurrentPlayer()) {
-            return null;
-        }
-
-        // Update remaining time
-        updatePlayerTime(game);
-
-        // Check if column is valid and not full
-        if (column < 0 || column >= 15 || isColumnFull(game.getBoard(), column)) {
-            return null;
-        }
-
-        // Place the piece
-        int row = getNextAvailableRow(game.getBoard(), column);
-        game.getBoard()[row][column] = playerNumber;
-
-        // Store pending move
-        game.getPendingMoves()[game.getCurrentMoveCount()] = column;
-        game.setCurrentMoveCount(game.getCurrentMoveCount() + 1);
-
-        // Check if this completes the turn (3 pieces)
-        if (game.getCurrentMoveCount() >= 3) {
-            // Check for win
-            if (checkWin(game.getBoard(), playerNumber)) {
-                game.setStatus(playerNumber == 1 ? GameStatus.FINISHED_PLAYER1_WIN : GameStatus.FINISHED_PLAYER2_WIN);
-            } else if (isBoardFull(game.getBoard())) {
-                game.setStatus(GameStatus.FINISHED_DRAW);
-            } else {
-                // Switch player
-                game.setCurrentPlayer(game.getCurrentPlayer() == 1 ? 2 : 1);
-                game.setCurrentMoveCount(0);
-                game.setLastMoveTime(LocalDateTime.now());
-            }
+        // Si les deux sont prêts, on passe en mode jeu
+        if (game.isPlayer1Ready() && game.isPlayer2Ready()) {
+            game.setStatus(GameStatus.IN_PROGRESS);
         }
 
         return game;
     }
 
-    private void updatePlayerTime(Game game) {
-        if (game.getLastMoveTime() == null) return;
+    public List<Game> getAllGames() {
+        return games.values().stream()
+                .sorted(Comparator.comparing(Game::getLastMoveTime, Comparator.nullsLast(Comparator.reverseOrder())))
+                .collect(Collectors.toList());
+    }
 
-        long secondsElapsed = ChronoUnit.SECONDS.between(game.getLastMoveTime(), LocalDateTime.now());
+    public Collection<Game> listGames() {
+        return games.values();
+    }
 
-        if (game.getCurrentPlayer() == 1) {
-            game.setPlayer1RemainingTime(Math.max(0, game.getPlayer1RemainingTime() - (int) secondsElapsed));
-            if (game.getPlayer1RemainingTime() <= 0) {
-                game.setStatus(GameStatus.FINISHED_TIME_OUT);
+    public Game makeMove(String gameId, String password, int column) {
+
+        try {
+            Game game = getGame(gameId);
+            if (game == null) {
+                throw new IllegalArgumentException("Partie introuvable");
             }
-        } else {
-            game.setPlayer2RemainingTime(Math.max(0, game.getPlayer2RemainingTime() - (int) secondsElapsed));
-            if (game.getPlayer2RemainingTime() <= 0) {
-                game.setStatus(GameStatus.FINISHED_TIME_OUT);
+
+
+            int currentPlayer = game.getCurrentPlayer();
+            System.out.println("🧠 currentMoveCount = " + game.getCurrentMoveCount());
+            System.out.println("🎮 currentPlayer = " + currentPlayer);
+            System.out.println("🔑 password reçu = " + password);
+            System.out.println("🔐 password1 = " + game.getPassword1());
+            System.out.println("🔐 password2 = " + game.getPassword2());
+
+            // Vérifie que le mot de passe correspond au joueur en cours
+            if ((currentPlayer == 1 && !password.equals(game.getPassword1())) ||
+                    (currentPlayer == 2 && !password.equals(game.getPassword2()))) {
+                throw new IllegalArgumentException("Mot de passe invalide pour ce joueur");
             }
-        }
-    }
 
-    private boolean isColumnFull(int[][] board, int column) {
-        return board[0][column] != 0;
-    }
-
-    private int getNextAvailableRow(int[][] board, int column) {
-        for (int row = 14; row >= 0; row--) {
-            if (board[row][column] == 0) {
-                return row;
+            if (game.getStatus() != GameStatus.IN_PROGRESS) {
+                throw new IllegalStateException("La partie n'est pas en cours");
             }
-        }
-        return -1;
-    }
 
-    private boolean checkWin(int[][] board, int player) {
-        // Check horizontal, vertical, and diagonal for 6 in a row
-        return checkHorizontal(board, player) ||
-                checkVertical(board, player) ||
-                checkDiagonal(board, player);
-    }
+            if (column < 0 || column >= 15) {
+                throw new IllegalArgumentException("Colonne invalide");
+            }
 
-    private boolean checkHorizontal(int[][] board, int player) {
-        for (int row = 0; row < 15; row++) {
-            int count = 0;
-            for (int col = 0; col < 15; col++) {
-                if (board[row][col] == player) {
-                    count++;
-                    if (count >= 6) return true;
+            int row = -1;
+            for (int i = 14; i >= 0; i--) {
+                if (game.getBoard()[i][column] == 0) {
+                    row = i;
+                    break;
+                }
+            }
+
+            if (row == -1) {
+                throw new IllegalArgumentException("Colonne pleine");
+            }
+
+
+            game.getBoard()[row][column] = currentPlayer;
+            game.getPendingMoves()[game.getCurrentMoveCount()] = column;
+            game.setCurrentMoveCount(game.getCurrentMoveCount() + 1);
+
+            if (checkVictory(game.getBoard(), row, column, currentPlayer)) {
+                if (currentPlayer == 1) {
+                    game.setStatus(GameStatus.FINISHED_PLAYER1_WIN);
+                    game.setWinner(game.getPlayer1Name());  // ✅ ICI
                 } else {
-                    count = 0;
+                    game.setStatus(GameStatus.FINISHED_PLAYER2_WIN);
+                    game.setWinner(game.getPlayer2Name());  // ✅ ICI
                 }
+                return game;
             }
+
+            if (isBoardFull(game.getBoard())) {
+                game.setStatus(GameStatus.FINISHED_DRAW);
+                game.setWinner("Match nul");
+                return game;
+            }
+
+            if (game.getCurrentMoveCount() == 3) {
+                game.setCurrentMoveCount(0);
+                game.setCurrentPlayer(currentPlayer == 1 ? 2 : 1);
+                game.setPendingMoves(new int[3]);
+            }
+
+            game.setLastMoveTime(java.time.LocalDateTime.now());
+
+            return game;
+
+        } catch (Exception e) {
+            System.err.println("💥 Erreur backend lors de makeMove : " + e.getMessage());
+            e.printStackTrace();
+            throw e;
         }
-        return false;
     }
-
-    private boolean checkVertical(int[][] board, int player) {
-        for (int col = 0; col < 15; col++) {
-            int count = 0;
-            for (int row = 0; row < 15; row++) {
-                if (board[row][col] == player) {
-                    count++;
-                    if (count >= 6) return true;
-                } else {
-                    count = 0;
-                }
-            }
-        }
-        return false;
-    }
-
-    private boolean checkDiagonal(int[][] board, int player) {
-        // Check diagonal (top-left to bottom-right)
-        for (int row = 0; row <= 9; row++) {
-            for (int col = 0; col <= 9; col++) {
-                int count = 0;
-                for (int i = 0; i < 6 && row + i < 15 && col + i < 15; i++) {
-                    if (board[row + i][col + i] == player) {
-                        count++;
-                    } else {
-                        break;
-                    }
-                }
-                if (count >= 6) return true;
-            }
-        }
-
-        // Check diagonal (top-right to bottom-left)
-        for (int row = 0; row <= 9; row++) {
-            for (int col = 5; col < 15; col++) {
-                int count = 0;
-                for (int i = 0; i < 6 && row + i < 15 && col - i >= 0; i++) {
-                    if (board[row + i][col - i] == player) {
-                        count++;
-                    } else {
-                        break;
-                    }
-                }
-                if (count >= 6) return true;
-            }
-        }
-
-        return false;
-    }
-
     private boolean isBoardFull(int[][] board) {
-        for (int col = 0; col < 15; col++) {
-            if (board[0][col] == 0) {
-                return false;
+        for (int[] row : board) {
+            for (int cell : row) {
+                if (cell == 0) return false;
             }
         }
         return true;
+    }
+
+    private boolean checkVictory(int[][] board, int row, int col, int player) {
+        // Directions : horiz, vert, diag1, diag2
+        int[][] directions = {
+                {0, 1},  // →
+                {1, 0},  // ↓
+                {1, 1},  // ↘
+                {1, -1}  // ↙
+        };
+
+        for (int[] dir : directions) {
+            int count = 1;
+
+            // Avance dans la direction
+            count += countDirection(board, row, col, dir[0], dir[1], player);
+            // Recule dans la direction opposée
+            count += countDirection(board, row, col, -dir[0], -dir[1], player);
+
+            if (count >= 6) return true;
+        }
+
+        return false;
+    }
+
+    private int countDirection(int[][] board, int row, int col, int dRow, int dCol, int player) {
+        int count = 0;
+        int i = row + dRow;
+        int j = col + dCol;
+
+        while (i >= 0 && i < board.length && j >= 0 && j < board[0].length && board[i][j] == player) {
+            count++;
+            i += dRow;
+            j += dCol;
+        }
+
+        return count;
     }
 }

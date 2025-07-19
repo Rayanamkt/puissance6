@@ -1,13 +1,10 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { Game } from './game.model';
+import { HttpHeaders } from '@angular/common/http';
 
 
-export interface Game {
-  gameId: string;
-  player1Name: string;
-  player2Name: string;
-  player1TimeSeconds: number;
-  player2TimeSeconds: number;
-}
 
 @Injectable({
   providedIn: 'root'
@@ -18,9 +15,26 @@ export class GameService {
 
   get createdGamesCount() { return this.createdGames.length; }
 
-  constructor() { }
+  constructor(private httpClient: HttpClient) { }
 
-  addCreatedGame(game: Game) {
-    this.createdGames.push(game);
+
+  getAllGames(): Observable<Game[]> {
+    return this.httpClient.get<Game[]>(`api/games/list`);
+  }
+
+  getGameById(id: string): Observable<Game> {
+    return this.httpClient.get<Game>(`api/games/${id}/state`);
+  }
+  playMove(gameId: string, password: string, column: number): Observable<Game> {
+    return this.httpClient.post<Game>(`api/games/${gameId}/move`, {
+      password,
+      column
+    });
+  }
+  markReady(gameId: string, password: string): Observable<Game> {
+    return this.httpClient.post<Game>(
+      `api/games/${gameId}/ready`,
+      { password }
+    );
   }
 }

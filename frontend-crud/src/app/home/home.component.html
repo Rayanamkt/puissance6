@@ -1,0 +1,22 @@
+<div class="container">
+  <div class="title">
+    <span class="power">Puissance</span><span class="four"> 6</span>
+  </div>
+  <div class="button-group">
+    <button class="start-btn" (click)="goToList()">Commencer</button>
+    <button class="rules-btn" (click)="showRules()">Règles du jeu</button>
+  </div>
+
+  <div class="rules-modal" *ngIf="showRulesModal">
+    <div class="modal-content">
+      <h2>Règles du jeu</h2>
+      <p>
+        Le but du jeu est d’aligner 6 jetons horizontalement, verticalement ou en diagonale avant ton adversaire.
+        <br><br>
+        Les joueurs placent trois jeton chacun leur tour dans l'une des colonnes du plateau.
+        Le jeton tombe jusqu'à atteindre la case la plus basse disponible.
+      </p>
+      <button class="close-btn" (click)="hideRules()">Fermer</button>
+    </div>
+  </div>
+</div>

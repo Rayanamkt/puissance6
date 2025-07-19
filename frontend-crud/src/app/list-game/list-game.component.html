@@ -1,14 +1,13 @@
 
-<button (click)="generateRows()">Generate Rows</button>
-
-number of rows: {{rowData.length}}
+<h1>Liste des parties</h1>
 
 <ag-grid-angular
   class="ag-theme-quartz"
-  style="height: 500px;"
+  style="flex-row: 1; width: 100%; min-height: 400px;"
   [rowData]="rowData"
   [columnDefs]="colDefs"
   [defaultColDef]="defaultColDef"
->
-</ag-grid-angular>
+  [localeText]="localeText"
+  (gridReady)="onGridReady($event)">
+></ag-grid-angular>
 

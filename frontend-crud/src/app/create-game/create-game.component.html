@@ -1,32 +1,17 @@
-<H2> Create Game(s)</H2>
+<h1>Créer une partie</h1>
 
-<div class="container">
-  <div class="row">
-    <label class="col-3">Created games: </label>
-    <div class="col-2">{{createdGameCount}}   (recently: {{recentlyCreatedGameCount}})</div>
-  </div>
-  <div class="row">
-    <label class="col-3">Error creating games: </label>
-    <div class="col-2">{{errorCreatingGameCount}}</div>
-  </div>
-  <div class="row">
-    <label class="col-3">Player 1 Name: </label>
-    <input class="col-3" type="text"
-           [(ngModel)]="player1Name"
-           placeholder="Player 1">
-  </div>
-  <div class="row">
-    <label class="col-3">Create Games: </label>
-    <button class="col-2 btn btn-primary"
-            (click)="createGame()">Create Game</button>
-  </div>
-  <div class="row">
-    <label class="col-3">Create 10 000 Games </label>
-    <button class="col-2 btn btn-primary"
-            (click)="create10000Games()">Create 10000 Games</button>
-    <label class="col-2">Remain count..</label>
-    <div class="col-1">{{remainCreateCount}}</div>
-  </div>
+<div style="margin: 20px">
+  <p>Parties créées : {{ createdGameCount }} (récentes : {{ recentlyCreatedGameCount }})</p>
+  <p>Erreurs de création : {{ errorCreatingGameCount }}</p>
+
+  <label>Nom du joueur :</label>
+  <input [(ngModel)]="player1Name" />
+
+  <br><br>
+
+
+
+  <button (click)="createGame()">Créer une partie</button>
+  <br><br>
 
 </div>
-

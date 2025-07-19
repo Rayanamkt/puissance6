@@ -1,0 +1,7 @@
+<div class="container">
+  <h2>Rejoindre une partie</h2>
+  <label>Nom du joueur :</label>
+  <input [(ngModel)]="playerName" placeholder="Entrez votre nom" />
+  <button (click)="joinGame()">Rejoindre</button>
+  <p *ngIf="error" style="color: red;">{{ error }}</p>
+</div>

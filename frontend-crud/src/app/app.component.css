@@ -1,0 +1,61 @@
+:host {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+.sidebar {
+  width: 250px;
+  background-color: #f5f5f5;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+.logo {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  text-decoration: none;
+  color: red;
+}
+
+.logo .six {
+  color: blue;
+}
+.nav-button {
+  background: none;
+  border: none;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #333;
+  text-decoration: none;
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 8px;
+  transition: background-color 0.3s, color 0.3s;
+  font-family: sans-serif;
+}
+
+.nav-button:hover {
+  background-color: #dcdcdc;
+  color: #000;
+}
+.nav-button:focus {
+  outline: none;
+}
+.nav-button i {
+  margin-right: 8px;
+}
+.nav-button.active {
+  background-color: #c0c0c0;
+  font-weight: bold;
+}
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}

@@ -11,6 +11,8 @@ public class GameStateResponse {
     private int[][] board;
     private int player1RemainingTime;
     private int player2RemainingTime;
+    private boolean player1Ready;
+    private boolean player2Ready;
     private String status;
     private int currentMoveCount;
     private String winner;

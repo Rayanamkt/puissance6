@@ -1,0 +1,108 @@
+/* Fond général */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: linear-gradient(to bottom right, #fff8e1, #ffe0b2);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Container principal */
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+}
+
+/* Titre du jeu */
+.title {
+  font-size: 3rem;
+  margin-bottom: 30px;
+}
+
+.power {
+  color: red;
+  font-weight: bold;
+}
+
+.four {
+  color: blue;
+  font-weight: bold;
+}
+
+/* Groupe de boutons */
+.button-group {
+  display: flex;
+  gap: 20px;
+}
+
+/* Boutons */
+.start-btn, .rules-btn {
+  padding: 12px 25px;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  color: white;
+  transition: transform 0.2s;
+}
+
+.start-btn {
+  background-color: #1976d2;
+}
+
+.rules-btn {
+  background-color: #d32f2f;
+}
+
+.start-btn:hover, .rules-btn:hover {
+  transform: scale(1.05);
+}
+
+/* Modal */
+.rules-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 15px;
+  max-width: 600px;
+  box-shadow: 0px 0px 20px rgba(0,0,0,0.3);
+  text-align: left;
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  color: #d32f2f;
+}
+
+.modal-content p {
+  margin-bottom: 20px;
+  font-size: 1rem;
+}
+
+.close-btn {
+  padding: 10px 20px;
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  background-color: #1565c0;
+}

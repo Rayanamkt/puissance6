@@ -1,0 +1,17 @@
+<div *ngIf="game">
+  <h2>Partie de Puissance 6</h2>
+  <p><strong>Joueur 1 :</strong> {{ game.player1Name }}</p>
+  <p><strong>Joueur 2 :</strong> {{ game.player2Name || 'En attente...' }}</p>
+
+  <div *ngIf="!game.player2Name">
+    <p>En attente qu’un second joueur rejoigne...</p>
+  </div>
+
+  <div *ngIf="game.player2Name">
+    <p>Les deux joueurs sont présents.</p>
+
+    <div *ngIf="game?.player2Name && game?.status !== 'IN_PROGRESS'">
+      Second joueur détecté. Préparation en cours...
+    </div>
+  </div>
+</div>

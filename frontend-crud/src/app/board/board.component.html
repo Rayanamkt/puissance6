@@ -1,0 +1,31 @@
+<div *ngIf="game">
+  <div class="header">
+    <span class="joueur rouge">🔴 {{ game.player1Name }}</span>
+    <span class="joueur bleu">🔵 {{ game.player2Name }}</span>
+  </div>
+  <p class="tour-joueur">
+    C’est au tour de
+    <strong [style.color]="game.currentPlayer === 1 ? 'red' : 'blue'">
+      {{ game.currentPlayer === 1 ? (game.player1Name || 'Joueur 1') : (game.player2Name || 'Joueur 2') }}
+    </strong>
+  </p>
+  <h3> Vous êtes : {{ connectedPlayer === 1 ? '🔴 Joueur 1' : '🔵 Joueur 2' }}</h3>
+  <div class="grille">
+    <ng-container *ngFor="let row of board; let rowIndex = index">
+      <ng-container *ngFor="let cell of row; let colIndex = index">
+        <div
+          class="cell row-{{ rowIndex }} col-{{ colIndex }}"
+          (click)="handleColumnClick(colIndex)"
+        >
+          <div
+            class="pion"
+            [ngClass]="{
+              'rouge': cell === 1,
+              'bleu': cell === 2
+            }"
+          ></div>
+        </div>
+      </ng-container>
+    </ng-container>
+  </div>
+</div>

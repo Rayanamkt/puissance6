@@ -1,0 +1,32 @@
+<div class="home-container">
+  <div class="title">
+    <span class="power">Règles</span><span class="four"> du jeu</span>
+  </div>
+  <div class="rules-box">
+
+    <p>
+      <strong>Puissance 6</strong> est un jeu stratégique pour 2 joueurs. Le but est d’être le premier à aligner <strong>6 jetons</strong> de sa couleur :
+    </p>
+    <ul>
+      <li>horizontalement</li>
+      <li>verticalement</li>
+      <li>ou en diagonale</li>
+    </ul>
+    <p>
+      À chaque tour, un joueur place <strong>3 jetons consécutivement</strong> sur le plateau. Il peut choisir librement les colonnes dans lesquelles il les dépose, une par une.
+    </p>
+
+    <p>
+      Chaque jeton tombe automatiquement jusqu’à la case la plus basse disponible dans sa colonne.
+    </p>
+    <button
+      class="btn btn-outline-info mb-3"
+      ngbTooltip="Les jetons tombent automatiquement dans la colonne choisie.">
+      ℹ️ Info : fonctionnement des colonnes
+    </button>
+    <p>
+      Le premier joueur à aligner exactement 6 jetons consécutifs remporte la partie. Si le plateau est rempli sans alignement de 6, la partie est déclarée nulle.
+    </p>
+    <button class="start-btn" (click)="goHome()">Retour</button>
+  </div>
+</div>

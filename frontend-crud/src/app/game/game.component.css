@@ -1,0 +1,18 @@
+.btn {
+  padding: 8px 16px;
+  font-size: 16px;
+  margin-top: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-success {
+  background-color: #28a745;
+  color: white;
+  border: none;
+}
+.status-message {
+  margin-top: 1rem;
+  color: #444;
+  font-style: italic;
+}

@@ -4,7 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
 public class JoinGameResponse {
     private String password;
+    private int playerNumber;
+
+    public JoinGameResponse(String password, int playerNumber) {
+        this.password = password;
+        this.playerNumber = playerNumber;
+    }
+
 }

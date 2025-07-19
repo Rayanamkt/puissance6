@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @Getter
 public class Game {
-    private String id;
+    private String gameId;
     private String player1Name;
     private String player2Name;
     private String password1;
@@ -16,15 +16,18 @@ public class Game {
     private int player2TimeSeconds;
     private int player1RemainingTime;
     private int player2RemainingTime;
+    private boolean player1Ready = false;
+    private boolean player2Ready = false;
     private GameStatus status;
     private int currentPlayer; // 1 or 2
     private int[][] board; // 15x15 grid, 0=empty, 1=player1, 2=player2
     private LocalDateTime lastMoveTime;
-    private int currentMoveCount; // 0, 1, or 2 (for the 3 pieces per turn)
-    private int[] pendingMoves; // temporary storage for the current turn's moves
+    private int currentMoveCount = 1; // 0, 1, or 2 (for the 3 pieces per turn)
+    private int[] pendingMoves;
+    private String winner;
 
     public Game() {
-        this.id = UUID.randomUUID().toString();
+        this.gameId = UUID.randomUUID().toString();
         this.password1 = UUID.randomUUID().toString().substring(0, 8);
         this.password2 = UUID.randomUUID().toString().substring(0, 8);
         this.board = new int[15][15];
@@ -32,11 +35,12 @@ public class Game {
         this.currentPlayer = 1;
         this.currentMoveCount = 0;
         this.pendingMoves = new int[3];
+        this.winner = "";
     }
 
     // Getters and setters
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    public String getId() { return gameId; }
+    public void setId(String id) { this.gameId = id; }
 
     public String getPlayer1Name() { return player1Name; }
     public void setPlayer1Name(String player1Name) { this.player1Name = player1Name; }
@@ -68,6 +72,12 @@ public class Game {
     public int getPlayer2RemainingTime() { return player2RemainingTime; }
     public void setPlayer2RemainingTime(int player2RemainingTime) { this.player2RemainingTime = player2RemainingTime; }
 
+    public boolean isPlayer1Ready() { return player1Ready; }
+    public void setPlayer1Ready(boolean player1Ready) { this.player1Ready = player1Ready; }
+
+    public boolean isPlayer2Ready() { return player2Ready; }
+    public void setPlayer2Ready(boolean player2Ready) { this.player2Ready = player2Ready; }
+
     public GameStatus getStatus() { return status; }
     public void setStatus(GameStatus status) { this.status = status; }
 
@@ -85,5 +95,15 @@ public class Game {
 
     public int[] getPendingMoves() { return pendingMoves; }
     public void setPendingMoves(int[] pendingMoves) { this.pendingMoves = pendingMoves; }
+
+    public String getCurrentPlayerPassword() {
+        return currentPlayer == 1 ? password1 : password2;
+    }
+    public void setWinner(String winner) {
+        this.winner = winner;
+    }
+    public String getWinner() {
+        return winner;
+    }
 }
 

@@ -1,12 +1,25 @@
 import { Component } from '@angular/core';
-import {RouterLink, RouterOutlet} from '@angular/router';
+import {Router, RouterLink, RouterOutlet} from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink],
+  standalone: true,
+  imports: [RouterOutlet, RouterLink, CommonModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'frontend-crud';
+  currentRoute: string = '';
+
+  constructor(private router: Router) {
+    this.router.events.subscribe(() => {
+      this.currentRoute = this.router.url;
+    });
+  }
+
+  isHomeRoute(): boolean {
+    const currentRoute = this.router.url;
+    return currentRoute === '/' || currentRoute === '/rules';
+  }
 }

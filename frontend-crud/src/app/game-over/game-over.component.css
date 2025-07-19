@@ -1,0 +1,16 @@
+.game-over-container {
+  text-align: center;
+  padding: 40px;
+}
+
+.result-message {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin: 20px 0;
+}
+
+button {
+  padding: 12px 24px;
+  font-size: 1rem;
+  cursor: pointer;
+}
