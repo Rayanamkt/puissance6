@@ -29,6 +29,7 @@ Puissance 6 est une application web développée en Angular + Spring Boot permet
 
 ## 📂 Structure du projet
 td-6-in-a-row-game/
+├── 
 │
 ├── backend/
 │   ├── pom.xml
