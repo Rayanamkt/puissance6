@@ -84,18 +84,18 @@ Le proxy (proxy.conf.json) redirige /api vers le backend.
 ## 📸 Captures d’écran
 
 - Accueil (`/`)  
-  ![Accueil](./screenshots/accueil.png)
+  ![Accueil](./frontend/screenshots/accueil.png)
 
 - Liste des parties (`/list`)  
-  ![Liste des parties](./screenshots/liste.png)
+  ![Liste des parties](./frontend/screenshots/liste.png)
 
 - Création d’une partie (`/create`)  
-  ![Créer](./screenshots/creation.png)
+  ![Créer](./frontend/screenshots/creation.png)
 
 - Plateau de jeu (`/game/:id/board`)  
-  ![Plateau](./screenshots/joueur1.png)
-![Plateau](./screenshots/joueur2.png)
-![Plateau](./screenshots/fin.png)
+  ![Plateau](./frontend/screenshots/joueur1.png)
+![Plateau](./frontend/screenshots/joueur2.png)
+![Plateau](./frontend/screenshots/fin.png)
 
 - Règles du jeu (`/rules`)  
-  ![Règles](./screenshots/regles.png)
+  ![Règles](./frontend/screenshots/regles.png)
